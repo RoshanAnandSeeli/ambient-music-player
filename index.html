@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ambient Player</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="bg-blur"></div>
+  <canvas id="particles"></canvas>
+
+  <!-- fullscreen artwork overlay -->
+  <div id="art-overlay">
+    <img id="art-overlay-img" src="" alt="" />
+    <div id="art-overlay-placeholder">♪</div>
+  </div>
+
+  <div id="player">
+
+    <!-- lyrics panel (left) -->
+    <div id="panel-lyrics">
+      <div class="panel-header">
+        <span>Lyrics</span>
+        <button class="panel-close" data-panel="panel-lyrics">✕</button>
+      </div>
+      <textarea id="lyrics-input" placeholder="Paste lyrics here…" spellcheck="false"></textarea>
+      <div id="lyrics-display"></div>
+    </div>
+
+    <!-- queue panel (right) -->
+    <div id="panel-queue">
+      <div class="panel-header">
+        <span>Queue</span>
+        <button class="panel-close" data-panel="panel-queue">✕</button>
+      </div>
+      <ul id="queue-list"></ul>
+    </div>
+    <div id="artwork-wrap">
+      <img id="artwork" src="" alt="artwork" />
+      <div id="artwork-placeholder">♪</div>
+    </div>
+
+    <div id="track-info">
+      <div id="track-title">No track loaded</div>
+      <div id="track-artist">—</div>
+    </div>
+
+    <div id="progress-wrap">
+      <span id="time-current">0:00</span>
+      <input type="range" id="progress-bar" min="0" max="1000" value="0" step="1" />
+      <span id="time-total">0:00</span>
+    </div>
+
+    <div id="controls">
+      <button id="btn-prev" title="Previous">&#9664;&#9664;</button>
+      <button id="btn-play" title="Play"><span class="play-icon">&#9654;</span></button>
+      <button id="btn-next" title="Next">&#9654;&#9654;</button>
+    </div>
+
+    <div id="secondary-controls">
+      <button id="btn-lyrics" title="Lyrics">&#9835;</button>
+      <button id="btn-shuffle" title="Shuffle">&#x2922;</button>
+      <button id="btn-loop" title="Loop">&#x21BA;</button>
+      <button id="btn-queue" title="Queue">&#9776;</button>
+      <button id="btn-theme" title="Light mode">&#9728;</button>
+    </div>
+
+    <div id="volume-wrap">
+      <span id="vol-icon">♪</span>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8" />
+    </div>
+
+    <label id="upload-label">
+      + Add Tracks
+      <input type="file" id="file-input" accept="audio/*" multiple hidden />
+    </label>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+  <script src="player.js"></script>
+</body>
+</html>
