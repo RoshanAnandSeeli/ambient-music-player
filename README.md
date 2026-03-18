@@ -20,3 +20,6 @@ A minimal, beat-reactive music player that runs entirely in the browser — no i
 
 
 Try it out! https://roshananandseeli.github.io/ambient-music-player/
+
+
+Try it out! https://github.com/RoshanAnandSeeli/ambient-music-player

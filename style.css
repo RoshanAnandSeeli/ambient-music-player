@@ -1,6 +1,9 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
 body, a, button, input, label, [role="button"], #artwork-wrap { cursor: none; }
+@media (hover: none) {
+  body, a, button, input, label, [role="button"], #artwork-wrap { cursor: pointer; }
+}
 
 #cursor {
   position: fixed;
