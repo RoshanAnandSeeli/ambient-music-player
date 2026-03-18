@@ -349,7 +349,8 @@ function readTags(file, cb) {
 
 // ── File input ────────────────────────────────────────────────
 fileInput.addEventListener('change', () => {
-  const files = [...fileInput.files];
+  const files = [...fileInput.files].filter(f => f.type.startsWith('audio/') || /\.(mp3|m4a|aac|wav|flac|ogg|opus)$/i.test(f.name));
+  if (!files.length) return;
   let loaded = 0;
   files.forEach(file => {
     readTags(file, info => {
