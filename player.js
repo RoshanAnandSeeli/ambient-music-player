@@ -162,6 +162,20 @@ function buildShuffleQueue() {
   current = 0;
 }
 
+function updateMediaSession() {
+  if (!('mediaSession' in navigator)) return;
+  const t = queue[current];
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title:  t.title  || t.file.name,
+    artist: t.artist || '—',
+    artwork: t.artwork ? [{ src: t.artwork }] : []
+  });
+  navigator.mediaSession.setActionHandler('play',         () => { if (!playing) togglePlay(); });
+  navigator.mediaSession.setActionHandler('pause',        () => { if (playing)  togglePlay(); });
+  navigator.mediaSession.setActionHandler('previoustrack',() => btnPrev.click());
+  navigator.mediaSession.setActionHandler('nexttrack',    () => btnNext.click());
+}
+
 function loadTrack(index) {
   const t = queue[index];
   current = index;
@@ -174,6 +188,7 @@ function loadTrack(index) {
   timeTotal.textContent   = '0:00';
   lyricsDisplay.textContent = t.lyrics || '';
   lyricsInput.value = t.lyrics || '';
+  updateMediaSession();
   renderQueue();
 }
 
@@ -318,6 +333,10 @@ lyricsEditBtn.addEventListener('click', () => {
     if (tracks[current]) tracks[current].lyrics = text;
   }
 });
+
+document.addEventListener('touchstart', () => {
+  if (ctx.state === 'suspended') ctx.resume();
+}, { passive: true });
 
 // ── Mobile tap ripple ─────────────────────────────────────────
 document.addEventListener('touchstart', e => {
