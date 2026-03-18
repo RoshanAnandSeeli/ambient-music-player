@@ -17,3 +17,6 @@ A minimal, beat-reactive music player that runs entirely in the browser — no i
 - **☰** — open queue panel (click any track to jump to it)
 - **☀** — toggle light / dark mode
 - Click the **album artwork** to fullscreen it
+
+
+Try it out! https://roshananandseeli.github.io/ambient-music-player/
