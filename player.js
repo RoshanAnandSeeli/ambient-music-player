@@ -45,10 +45,7 @@ const lyricsInput    = document.getElementById('lyrics-input');
 const artOverlay     = document.getElementById('art-overlay');
 const artOverlayImg  = document.getElementById('art-overlay-img');
 const artOverlayPh   = document.getElementById('art-overlay-placeholder');
-const overlayCanvas  = document.getElementById('overlay-particles');
 const btnTheme       = document.getElementById('btn-theme');
-const oc = overlayCanvas.getContext('2d');
-let overlayParticles = [], overlayActive = false;
 
 // inject edit button into lyrics panel
 const lyricsEditBtn = document.createElement('button');
@@ -108,12 +105,24 @@ function drawParticles(energy) {
   }
 }
 
+// ── Custom cursor ────────────────────────────────────────────
+const cursorEl = document.getElementById('cursor');
+let mouseX = -100, mouseY = -100;
+document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
 // ── Animation loop ────────────────────────────────────────────
 function loop() {
   requestAnimationFrame(loop);
   analyser.getByteFrequencyData(freqData);
   const avg = freqData.reduce((a, b) => a + b, 0) / freqData.length;
   const energy = avg / 255;
+
+  cursorEl.style.left = mouseX + 'px';
+  cursorEl.style.top  = mouseY + 'px';
+  const cursorScale = 1 + energy * 1.2;
+  const cursorGlow  = 8 + energy * 24;
+  cursorEl.style.transform = `translate(-50%, -50%) scale(${cursorScale})`;
+  cursorEl.style.boxShadow = `0 0 ${cursorGlow}px ${cursorGlow/3}px var(--glow), 0 0 ${cursorGlow*2}px ${cursorGlow/2}px rgba(167,139,250,0.35)`;
 
   const scale = 1 + energy * 0.12;
   artWrap.style.transform = `scale(${scale})`;
@@ -271,57 +280,7 @@ document.querySelectorAll('.panel-close').forEach(btn => {
   });
 });
 
-// ── Overlay particles ────────────────────────────────────────
-function resizeOverlay() {
-  overlayCanvas.width  = window.innerWidth;
-  overlayCanvas.height = window.innerHeight;
-}
-resizeOverlay();
-window.addEventListener('resize', resizeOverlay);
-
-function spawnOverlayParticle() {
-  const cx = overlayCanvas.width / 2;
-  const cy = overlayCanvas.height / 2;
-  const radius = Math.min(overlayCanvas.width, overlayCanvas.height) * 0.22;
-  const angle = Math.random() * Math.PI * 2;
-  const r = radius * (0.6 + Math.random() * 0.8);
-  overlayParticles.push({
-    x: cx + Math.cos(angle) * r,
-    y: cy + Math.sin(angle) * r,
-    vx: (Math.random() - 0.5) * 1.2,
-    vy: (Math.random() - 0.5) * 1.2 - 0.4,
-    life: 1,
-    decay: 0.006 + Math.random() * 0.008,
-    size: 1.5 + Math.random() * 3,
-    hue: 260 + Math.random() * 80
-  });
-}
-
-function drawOverlayParticles() {
-  oc.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-  if (!overlayActive) return;
-  for (let i = 0; i < 6; i++) spawnOverlayParticle();
-  for (let i = overlayParticles.length - 1; i >= 0; i--) {
-    const p = overlayParticles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.vy -= 0.015;
-    p.life -= p.decay;
-    if (p.life <= 0) { overlayParticles.splice(i, 1); continue; }
-    oc.save();
-    oc.globalAlpha = p.life * 0.8;
-    oc.shadowBlur  = 16;
-    oc.shadowColor = `hsl(${p.hue},90%,70%)`;
-    oc.fillStyle   = `hsl(${p.hue},80%,75%)`;
-    oc.beginPath();
-    oc.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-    oc.fill();
-    oc.restore();
-  }
-  requestAnimationFrame(drawOverlayParticles);
-}
-
-// ── Theme toggle ──────────────────────────────────────────────
+// ── Theme toggle ─────────────────────────────────────────────
 btnTheme.addEventListener('click', () => {
   document.body.classList.toggle('light');
   const isLight = document.body.classList.contains('light');
@@ -336,13 +295,9 @@ artWrap.addEventListener('click', () => {
   artOverlayPh.style.display  = hasArt ? 'none'  : 'block';
   if (hasArt) artOverlayImg.src = artwork.src;
   artOverlay.classList.add('open');
-  overlayActive = true;
-  overlayParticles = [];
-  drawOverlayParticles();
 });
 artOverlay.addEventListener('click', () => {
   artOverlay.classList.remove('open');
-  overlayActive = false;
 });
 
 // ── Lyrics edit ───────────────────────────────────────────────
@@ -363,6 +318,17 @@ lyricsEditBtn.addEventListener('click', () => {
     if (tracks[current]) tracks[current].lyrics = text;
   }
 });
+
+// ── Mobile tap ripple ─────────────────────────────────────────
+document.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  const el = document.createElement('div');
+  el.className = 'tap-ripple';
+  el.style.left = t.clientX + 'px';
+  el.style.top  = t.clientY + 'px';
+  document.body.appendChild(el);
+  el.addEventListener('animationend', () => el.remove());
+}, { passive: true });
 
 // ── Tag reading ───────────────────────────────────────────────
 function readTags(file, cb) {
